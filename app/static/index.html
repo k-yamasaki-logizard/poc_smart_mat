@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重量更新アプリ(仮)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-purple-600 p-2 sm:p-5">
+    <div
+        class="w-full max-w-full sm:max-w-2xl mx-auto bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl min-h-[calc(100vh-1rem)] sm:min-h-auto">
+        <header class="text-center mb-4 sm:mb-8">
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-bold text-indigo-600 mb-1 sm:mb-2">重量更新アプリ(仮)</h1>
+            <p class="text-sm sm:text-base text-gray-600">SmartMatの計測結果を、Zeroに反映</p>
+        </header>
+
+        <div class="mb-4 sm:mb-6">
+            <label for="productId" class="block text-sm font-medium text-gray-700 mb-2">商品ID</label>
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <input type="text" id="productId" value="smart_mat_test" readonly
+                    class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl text-base bg-gray-50 text-gray-700 cursor-not-allowed focus:outline-none">
+                <button id="reflectBtn"
+                    class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap">
+                    計測結果を反映
+                </button>
+            </div>
+        </div>
+
+        <main id="mainContent" class="text-sm sm:text-base">
+            <!-- コンテンツエリア -->
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

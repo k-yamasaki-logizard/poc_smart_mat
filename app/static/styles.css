@@ -1,0 +1,68 @@
+/* Tailwind CSSのカスタムスタイルとアニメーション */
+
+/* 320x480デバイス向けの最適化 */
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+        /* ベースフォントサイズを小さく */
+    }
+
+    body {
+        padding: 0.5rem;
+    }
+}
+
+/* より小さいデバイス（320px以下）向け */
+@media (max-width: 320px) {
+    html {
+        font-size: 12px;
+    }
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease;
+}
+
+/* フィルターボタンのアクティブ状態（JavaScriptで動的に追加されるクラス） */
+.filter-btn.active {
+    background: linear-gradient(to right, #6366f1, #9333ea);
+    color: white;
+}
+
+/* 320x480デバイス向けのユーティリティクラス */
+@media (max-width: 480px) {
+    .text-xs-mobile {
+        font-size: 0.625rem;
+        /* 10px */
+    }
+
+    .text-sm-mobile {
+        font-size: 0.75rem;
+        /* 12px */
+    }
+
+    .text-base-mobile {
+        font-size: 0.875rem;
+        /* 14px */
+    }
+
+    .p-mobile {
+        padding: 0.75rem;
+    }
+
+    .mb-mobile {
+        margin-bottom: 0.75rem;
+    }
+}

@@ -1,0 +1,14 @@
+# 依存関係
+node_modules/
+
+# 環境変数ファイル（機密情報を含むため）
+.env
+
+# ログファイル
+*.log
+npm-debug.log*
+
+# OS固有のファイル
+.DS_Store
+Thumbs.db
+
