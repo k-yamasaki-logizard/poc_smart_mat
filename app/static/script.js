@@ -160,7 +160,7 @@ class App {
 // アプリを初期化
 // アプリ内データ
 const AppSettings = {
-    backendUrl: "http://localhost:3000/api",
+    backendUrl: "/api",
     accessToken: "1234567890",
 }
 const app = new App(AppSettings);
