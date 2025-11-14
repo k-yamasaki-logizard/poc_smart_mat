@@ -88,8 +88,6 @@ class ZeroApiClient {
      * @param {*} weight ケース_重量（SKU単位）
      */
     async updatePackage(itemId, caseBarcode, { caseLength = "", caseWidth = "", caseHeight = "", caseWeight = "" }) {
-        console.log(itemId, caseBarcode, caseLength, caseWidth, caseHeight, caseWeight);
-        console.log(`"${itemId}","${caseBarcode}","${caseLength}","${caseWidth}","${caseHeight}","${caseWeight}"`);
         const importResponse = await fetch(`${this.baseUrl}/common/import/import`, {
             method: 'POST',
             body: JSON.stringify({
