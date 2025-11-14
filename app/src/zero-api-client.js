@@ -77,7 +77,7 @@ class ZeroApiClient {
         return await loginResponse.json();
     }
 
-    async updateWeight(itemId, weight) {
+    async updateWeight(itemId, barcode, weight) {
         const importResponse = await fetch(`${this.baseUrl}/common/import/import`, {
             method: 'POST',
             body: JSON.stringify({
@@ -88,8 +88,8 @@ class ZeroApiClient {
                 PTRN_ID: "0", // スマートマット検証用パターン
                 ERROR_DETAIL: "1",
                 IMPORT_DATA: [
-                    '"商品ID","ケース_重量（SKU単位）"',
-                    `"${itemId}","${weight}"`,
+                    '"商品ID","ケースバーコード","ケース_重量（SKU単位）"',
+                    `"${itemId}","${barcode}","${weight}"`,
                 ]
             }),
             headers: {

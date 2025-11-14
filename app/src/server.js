@@ -33,6 +33,12 @@ app.use((req, res, next) => {
     next();
 });
 
+// ロギング
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${JSON.stringify({ ...req.body })}`);
+    next();
+});
+
 const apiRouter = express.Router();
 
 // アクセストークンチェック(現状、ACCESS_TOKENとの一致判定のみ)
@@ -66,8 +72,7 @@ apiRouter.get('/latestMeasureHistory', async (req, res) => {
 // 重量を更新
 apiRouter.post('/weight', async (req, res) => {
     try {
-        const { itemId, weight } = req.body;
-        console.log('Update weight request:', { itemId, weight });
+        const { itemId, barcode, weight } = req.body;
 
         // APIクライアント
         const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
@@ -87,7 +92,7 @@ apiRouter.post('/weight', async (req, res) => {
         }
 
         // 重量を更新
-        const updateResult = await zeroApiClient.updateWeight(itemId, weight);
+        const updateResult = await zeroApiClient.updateWeight(itemId, barcode, weight);
 
         if (updateResult.ERROR_CODE !== "0") {
             console.error(`Failed to update weight: ${JSON.stringify(updateResult)}`);

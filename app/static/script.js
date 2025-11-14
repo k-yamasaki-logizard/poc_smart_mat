@@ -16,14 +16,14 @@ class ApiService {
         return await response.json();
     }
 
-    async updateWeight(itemId, weight) {
+    async updateWeight(itemId, barcode, weight) {
         const response = await fetch(`${this.baseUrl}/weight`, {
             method: 'POST',
             headers: {
                 'authorization': this.accessToken,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ itemId, weight }),
+            body: JSON.stringify({ itemId, barcode, weight }),
         })
         if (!response.ok) {
             throw new Error('Failed to update weight');
@@ -39,7 +39,7 @@ class AppService {
 
     // 計測結果反映処理
     // 本来は、APIエラーとかで細分化
-    async reflect(itemId, onStart = () => { }, onFetchMeasureHistory = (measureHistory) => { }, onUpdateWeight = (updateResult) => { }, onFinish = () => { }) {
+    async reflect(itemId, barcode, onStart = () => { }, onFetchMeasureHistory = (measureHistory) => { }, onUpdateWeight = (updateResult) => { }, onFinish = () => { }) {
         try {
             await onStart();
             // 計測結果取得
@@ -50,7 +50,7 @@ class AppService {
             }
 
             // 重量更新
-            const updateResult = await this.apiService.updateWeight(itemId, measureHistory['current']);
+            const updateResult = await this.apiService.updateWeight(itemId, barcode, measureHistory['current']);
             if (updateResult.error) {
                 throw new Error(`Failed to update weight: ${updateResult.error}`);
             }
@@ -99,8 +99,13 @@ class App {
             reflectBtn.disabled = false;
             reflectBtn.innerHTML = '計測結果を反映';
         }
+
+        /**
+         * 一旦、商品IDとバーコードを同じで決め打ち
+         */
         reflectBtn.addEventListener('click', () => {
             this.appService.reflect(
+                productIdInput.value,
                 productIdInput.value,
                 onStartUpdate,
                 onFetchMeasureHistory,
