@@ -39,6 +39,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// エラー捕捉
+app.use((err, req, res, next) => {
+    console.error(`[${new Date().toISOString()}] Error: ${req.method} ${req.url}`);
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+
 const apiRouter = express.Router();
 
 // アクセストークンチェック(現状、ACCESS_TOKENとの一致判定のみ)
@@ -53,58 +60,48 @@ apiRouter.use((req, res, next) => {
 
 // 最新の計測履歴を取得
 apiRouter.get('/latestMeasureHistory', async (req, res) => {
-    try {
-        // APIクライアント
-        const smartMatApiClient = new SmartMatApiClient(
-            process.env.SMART_MAT_API_BASE_URL,
-            process.env.SMART_MAT_API_KEY,
-            process.env.SMART_MAT_API_DEVICE_ID
-        );
-        // 最新の計測履歴を取得
-        const measureHistory = await smartMatApiClient.fetchLatestMeasureHistory();
-        res.json(measureHistory);
-    } catch (error) {
-        console.error('Error fetching measure history:', error);
-        res.status(500).json({ error: error.message });
-    }
+    // APIクライアント
+    const smartMatApiClient = new SmartMatApiClient(
+        process.env.SMART_MAT_API_BASE_URL,
+        process.env.SMART_MAT_API_KEY,
+        process.env.SMART_MAT_API_DEVICE_ID
+    );
+    // 最新の計測履歴を取得
+    const measureHistory = await smartMatApiClient.fetchLatestMeasureHistory();
+    res.json(measureHistory);
 });
 
 // 重量を更新
 apiRouter.post('/weight', async (req, res) => {
-    try {
-        const { itemId, barcode, weight } = req.body;
+    const { itemId, barcode, weight } = req.body;
 
-        // APIクライアント
-        const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
+    // APIクライアント
+    const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
 
-        // ZERO APIログイン
-        const authResponse = await zeroApiClient.auth(
-            process.env.ZERO_API_APP_KEY,
-            process.env.ZERO_API_AUTH_KEY,
-            process.env.ZERO_API_OWNER_ID,
-            process.env.ZERO_API_AREA_ID
-        );
+    // ZERO APIログイン
+    const authResponse = await zeroApiClient.auth(
+        process.env.ZERO_API_APP_KEY,
+        process.env.ZERO_API_AUTH_KEY,
+        process.env.ZERO_API_OWNER_ID,
+        process.env.ZERO_API_AREA_ID
+    );
 
-        if (authResponse.ERROR_CODE !== "0") {
-            console.error(`Failed to login: ${JSON.stringify(authResponse)}`);
-            res.status(401).json({ ERROR_CODE: authResponse.ERROR_CODE, DATA: authResponse.DATA });
-            return;
-        }
-
-        // 重量を更新
-        const updateResult = await zeroApiClient.updateWeight(itemId, barcode, weight);
-
-        if (updateResult.ERROR_CODE !== "0") {
-            console.error(`Failed to update weight: ${JSON.stringify(updateResult)}`);
-            res.status(400).json({ ERROR_CODE: updateResult.ERROR_CODE, DATA: updateResult.DATA });
-            return;
-        }
-
-        res.json(updateResult);
-    } catch (error) {
-        console.error('Error updating weight:', error);
-        res.status(500).json({ error: error.message });
+    if (authResponse.ERROR_CODE !== "0") {
+        console.error(`Failed to login: ${JSON.stringify(authResponse)}`);
+        res.status(401).json({ ERROR_CODE: authResponse.ERROR_CODE, DATA: authResponse.DATA });
+        return;
     }
+
+    // 重量を更新
+    const updateResult = await zeroApiClient.updateWeight(itemId, barcode, weight);
+
+    if (updateResult.ERROR_CODE !== "0") {
+        console.error(`Failed to update weight: ${JSON.stringify(updateResult)}`);
+        res.status(400).json({ ERROR_CODE: updateResult.ERROR_CODE, DATA: updateResult.DATA });
+        return;
+    }
+
+    res.json(updateResult);
 });
 
 // サーバー起動
