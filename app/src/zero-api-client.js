@@ -77,7 +77,19 @@ class ZeroApiClient {
         return await loginResponse.json();
     }
 
-    async updateWeight(itemId, barcode, weight) {
+    /**
+     * 梱包形態を更新
+     *
+     * @param {*} itemId 商品ID
+     * @param {*} caseBarcode ケースバーコード
+     * @param {*} caseLength ケース_縦（SKU単位）
+     * @param {*} width ケース_横（SKU単位）
+     * @param {*} height ケース_高さ（SKU単位）
+     * @param {*} weight ケース_重量（SKU単位）
+     */
+    async updatePackage(itemId, caseBarcode, { caseLength = "", caseWidth = "", caseHeight = "", caseWeight = "" }) {
+        console.log(itemId, caseBarcode, caseLength, caseWidth, caseHeight, caseWeight);
+        console.log(`"${itemId}","${caseBarcode}","${caseLength}","${caseWidth}","${caseHeight}","${caseWeight}"`);
         const importResponse = await fetch(`${this.baseUrl}/common/import/import`, {
             method: 'POST',
             body: JSON.stringify({
@@ -85,11 +97,11 @@ class ZeroApiClient {
                 AREA_ID: process.env.ZERO_API_AREA_ID,
                 ONLY_AREA_IMPORT_FLG: "1",
                 FILE_ID: "2115", // 商品マスタ(梱包形態)2
-                PTRN_ID: "0", // スマートマット検証用パターン
+                PTRN_ID: "1", // スマートマット&スマートメジャー検証用パターン
                 ERROR_DETAIL: "1",
                 IMPORT_DATA: [
-                    '"商品ID","ケースバーコード","ケース_重量（SKU単位）"',
-                    `"${itemId}","${barcode}","${weight}"`,
+                    '"商品ID","ケースバーコード","ケース_縦（SKU単位）","ケース_横（SKU単位）","ケース_高さ（SKU単位）","ケース_重量（SKU単位）"',
+                    `"${itemId}","${caseBarcode}","${caseLength}","${caseWidth}","${caseHeight}","${caseWeight}"`,
                 ]
             }),
             headers: {
@@ -99,7 +111,7 @@ class ZeroApiClient {
         });
 
         if (!importResponse.ok) {
-            throw new Error(`Update weight failed: ${importResponse.statusText}`);
+            throw new Error(`Update item package failed: ${importResponse.statusText}`);
         }
         return await importResponse.json();
     }

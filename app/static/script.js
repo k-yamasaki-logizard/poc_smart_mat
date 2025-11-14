@@ -16,17 +16,17 @@ class ApiService {
         return await response.json();
     }
 
-    async updateWeight(itemId, barcode, weight) {
-        const response = await fetch(`${this.baseUrl}/weight`, {
+    async updateItemPackage(itemId, caseBarcode, { caseLength, caseWidth, caseHeight, caseWeight }) {
+        const response = await fetch(`${this.baseUrl}/itemPackage`, {
             method: 'POST',
             headers: {
                 'authorization': this.accessToken,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ itemId, barcode, weight }),
+            body: JSON.stringify({ itemId, caseBarcode, caseLength, caseWidth, caseHeight, caseWeight }),
         })
         if (!response.ok) {
-            throw new Error('Failed to update weight');
+            throw new Error('Failed to update item package');
         }
         return await response.json();
     }
@@ -39,7 +39,7 @@ class AppService {
 
     // 計測結果反映処理
     // 本来は、APIエラーとかで細分化
-    async reflect(itemId, barcode, onStart = () => { }, onFetchMeasureHistory = (measureHistory) => { }, onUpdateWeight = (updateResult) => { }, onFinish = () => { }) {
+    async reflectSmartMatResultToItemPackage(itemId, caseBarcode, onStart = () => { }, onFetchMeasureHistory = (measureHistory) => { }, onUpdateItemPackage = (updateResult) => { }, onFinish = () => { }) {
         try {
             await onStart();
             // 計測結果取得
@@ -50,12 +50,12 @@ class AppService {
             }
 
             // 重量更新
-            const updateResult = await this.apiService.updateWeight(itemId, barcode, measureHistory['current']);
+            const updateResult = await this.apiService.updateItemPackage(itemId, caseBarcode, { caseWeight: measureHistory['current'] });
             if (updateResult.error) {
-                throw new Error(`Failed to update weight: ${updateResult.error}`);
+                throw new Error(`Failed to update item package: ${updateResult.error}`);
             }
 
-            onUpdateWeight(updateResult)
+            onUpdateItemPackage(updateResult)
 
         } catch (error) {
             alert(error.message);
@@ -84,18 +84,18 @@ class App {
         // イベントリスナーの設定
         const productIdInput = document.getElementById('productId');
         const reflectBtn = document.getElementById('reflectBtn');
-        const onStartUpdate = () => {
+        const onStartReflectSmartMatResultToItemPackage = () => {
             reflectBtn.disabled = true;
             reflectBtn.innerHTML = '反映中...';
         }
         const onFetchMeasureHistory = (measureHistory) => {
             this.renderMeasureHistory(measureHistory);
         }
-        const onUpdateWeight = (updateResult) => {
+        const onUpdateItemPackage = (updateResult) => {
             alert("更新しました！");
             console.log(updateResult);
         }
-        const onFinishUpdate = () => {
+        const onFinishReflectSmartMatResultToItemPackage = () => {
             reflectBtn.disabled = false;
             reflectBtn.innerHTML = '計測結果を反映';
         }
@@ -104,13 +104,13 @@ class App {
          * 一旦、商品IDとバーコードを同じで決め打ち
          */
         reflectBtn.addEventListener('click', () => {
-            this.appService.reflect(
+            this.appService.reflectSmartMatResultToItemPackage(
                 productIdInput.value,
                 productIdInput.value,
-                onStartUpdate,
+                onStartReflectSmartMatResultToItemPackage,
                 onFetchMeasureHistory,
-                onUpdateWeight,
-                onFinishUpdate,
+                onUpdateItemPackage,
+                onFinishReflectSmartMatResultToItemPackage,
             );
         });
     }

@@ -71,9 +71,9 @@ apiRouter.get('/latestMeasureHistory', async (req, res) => {
     res.json(measureHistory);
 });
 
-// 重量を更新
-apiRouter.post('/weight', async (req, res) => {
-    const { itemId, barcode, weight } = req.body;
+// 梱包形態を更新
+apiRouter.post('/itemPackage', async (req, res) => {
+    const { itemId, caseBarcode, caseLength, caseWidth, caseHeight, caseWeight } = req.body;
 
     // APIクライアント
     const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
@@ -92,11 +92,16 @@ apiRouter.post('/weight', async (req, res) => {
         return;
     }
 
-    // 重量を更新
-    const updateResult = await zeroApiClient.updateWeight(itemId, barcode, weight);
+    // 梱包形態を更新
+    const updateResult = await zeroApiClient.updatePackage(itemId, caseBarcode, {
+        caseLength: caseLength,
+        caseWidth: caseWidth,
+        caseHeight: caseHeight,
+        caseWeight: caseWeight
+    });
 
     if (updateResult.ERROR_CODE !== "0") {
-        console.error(`Failed to update weight: ${JSON.stringify(updateResult)}`);
+        console.error(`Failed to update item package: ${JSON.stringify(updateResult)}`);
         res.status(400).json({ ERROR_CODE: updateResult.ERROR_CODE, DATA: updateResult.DATA });
         return;
     }
