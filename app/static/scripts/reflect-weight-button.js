@@ -32,7 +32,7 @@ class ReflectWeightButton {
 
         // onFinish
         this.reclectButtonElement.disabled = false;
-        this.reclectButtonElement.innerHTML = '計測結果を反映';
+        this.reclectButtonElement.innerHTML = 'SmartMat → Logizard Zero';
     }
 
     renderMeasureHistory(measureHistory) {
