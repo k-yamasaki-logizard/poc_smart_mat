@@ -29,12 +29,113 @@
             </div>
         </div>
 
+        <!-- サイズ計測モーダルを開くボタン -->
+        <div class="mb-4 sm:mb-6">
+            <button id="openMeasureModalBtn"
+                class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all">
+                サイズ計測を開く
+            </button>
+        </div>
+
+        <div id="measureHistoryContainer" class="mt-4 sm:mt-6"></div>
+
         <main id="mainContent" class="text-sm sm:text-base">
             <!-- コンテンツエリア -->
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <!-- モーダルウィンドウ -->
+    <div id="measureModal"
+        class="fixed inset-0 bg-black/50 z-50 overflow-y-auto hidden flex items-center justify-center p-4">
+        <!-- モーダルコンテンツ -->
+        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl my-auto">
+            <!-- 閉じるボタン -->
+            <button
+                class="absolute top-4 right-4 bg-white/90 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center text-xl z-10 transition-colors"
+                id="closeMeasureModalBtn">×</button>
+
+            <!-- メインコンテンツセクション -->
+            <div class="p-6">
+                <!-- 測定値入力テーブル -->
+                <div class="border border-gray-300 rounded-lg overflow-hidden mb-4">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="w-1/5 min-w-[40px] bg-gray-200 p-2 text-center border border-gray-300 text-sm font-normal">
+                                    計測順</th>
+                                <th
+                                    class="w-1/4 min-w-[55px] bg-gray-200 p-2 text-center border border-gray-300 text-sm font-normal">
+                                    項目</th>
+                                <th
+                                    class="w-auto min-w-[80px] bg-gray-200 p-2 text-center border border-gray-300 text-sm font-normal">
+                                    測定値</th>
+                            </tr>
+                        </thead>
+                        <tbody id="measurement-tbody">
+                            <!-- 測定項目1行目 -->
+                            <tr>
+                                <td class="w-1/5 p-2 text-center border border-gray-300 text-sm">1</td>
+                                <td class="w-1/4 p-2 text-center border border-gray-300 text-sm bg-white cursor-move select-none touch-none"
+                                    draggable="true" data-label="縦">縦</td>
+                                <td class="w-auto p-2 border border-gray-300">
+                                    <input type="text"
+                                        class="measurement-input w-full p-2 border border-gray-300 rounded text-right bg-yellow-50 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        inputmode="numeric">
+                                </td>
+                            </tr>
+                            <!-- 測定項目2行目 -->
+                            <tr>
+                                <td class="w-1/5 p-2 text-center border border-gray-300 text-sm">2</td>
+                                <td class="w-1/4 p-2 text-center border border-gray-300 text-sm bg-white cursor-move select-none touch-none"
+                                    draggable="true" data-label="横">横</td>
+                                <td class="w-auto p-2 border border-gray-300">
+                                    <input type="text"
+                                        class="measurement-input w-full p-2 border border-gray-300 rounded text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        inputmode="numeric">
+                                </td>
+                            </tr>
+                            <!-- 測定項目3行目 -->
+                            <tr>
+                                <td class="w-1/5 p-2 text-center border border-gray-300 text-sm">3</td>
+                                <td class="w-1/4 p-2 text-center border border-gray-300 text-sm bg-white cursor-move select-none touch-none"
+                                    draggable="true" data-label="高さ">高さ</td>
+                                <td class="w-auto p-2 border border-gray-300">
+                                    <input type="text"
+                                        class="measurement-input w-full p-2 border border-gray-300 rounded text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        inputmode="numeric">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 操作ボタンコンテナ -->
+            <div class="flex justify-between gap-4 p-6 pt-0 border-t border-gray-200">
+                <button id="resetButtonElement"
+                    class="reset-button flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold transition-colors">リセット</button>
+                <button id="confirmButtonElement" class=" confirm-button flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg
+                    font-bold transition-colors">確認</button>
+            </div>
+
+            <!-- 測定結果表示コンテナ -->
+            <div id="resultContainerElement"
+                class="m-6 mt-0 p-4 bg-gray-50 rounded-lg border border-gray-300 text-sm hidden flex items-center justify-between gap-4">
+                <div class="flex-1">
+                    <div class="font-bold mb-2">測定結果：</div>
+                    <div id="resultContentElement"></div>
+                </div>
+                <div class="flex-shrink-0">
+                    <button id="updateButtonElement"
+                        class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all whitespace-nowrap">
+                        更新
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="script.mjs"></script>
 </body>
 
 </html>

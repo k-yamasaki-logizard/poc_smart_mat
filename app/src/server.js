@@ -71,9 +71,10 @@ apiRouter.get('/latestMeasureHistory', async (req, res) => {
     res.json(measureHistory);
 });
 
-// 梱包形態を更新
-apiRouter.post('/itemPackage', async (req, res) => {
-    const { itemId, caseBarcode, caseLength, caseWidth, caseHeight, caseWeight } = req.body;
+// 梱包形態(重量)を更新
+apiRouter.post('/itemPackageWeight', async (req, res) => {
+    const { itemId, caseBarcode, caseWeight } = req.body;
+    res.json({ message: '梱包形態(重量)を更新しました' });
 
     // APIクライアント
     const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
@@ -92,16 +93,47 @@ apiRouter.post('/itemPackage', async (req, res) => {
         return;
     }
 
-    // 梱包形態を更新
-    const updateResult = await zeroApiClient.updatePackage(itemId, caseBarcode, {
+    // 梱包形態(重量)を更新
+    const updateResult = await zeroApiClient.updatePackageWeight(itemId, caseBarcode, { caseWeight: caseWeight });
+    if (updateResult.ERROR_CODE !== "0") {
+        console.error(`Failed to update item package weight: ${JSON.stringify(updateResult)}`);
+        res.status(400).json({ ERROR_CODE: updateResult.ERROR_CODE, DATA: updateResult.DATA });
+        return;
+    }
+
+    res.json(updateResult);
+});
+
+// 梱包形態(サイズ)を更新
+apiRouter.post('/itemPackageSize', async (req, res) => {
+    const { itemId, caseBarcode, caseLength, caseWidth, caseHeight } = req.body;
+
+    // APIクライアント
+    const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
+
+    // ZERO APIログイン
+    const authResponse = await zeroApiClient.auth(
+        process.env.ZERO_API_APP_KEY,
+        process.env.ZERO_API_AUTH_KEY,
+        process.env.ZERO_API_OWNER_ID,
+        process.env.ZERO_API_AREA_ID
+    );
+
+    if (authResponse.ERROR_CODE !== "0") {
+        console.error(`Failed to login: ${JSON.stringify(authResponse)}`);
+        res.status(401).json({ ERROR_CODE: authResponse.ERROR_CODE, DATA: authResponse.DATA });
+        return;
+    }
+
+    // 梱包形態(サイズ)を更新
+    const updateResult = await zeroApiClient.updatePackageSize(itemId, caseBarcode, {
         caseLength: caseLength,
         caseWidth: caseWidth,
         caseHeight: caseHeight,
-        caseWeight: caseWeight
     });
 
     if (updateResult.ERROR_CODE !== "0") {
-        console.error(`Failed to update item package: ${JSON.stringify(updateResult)}`);
+        console.error(`Failed to update item package size: ${JSON.stringify(updateResult)}`);
         res.status(400).json({ ERROR_CODE: updateResult.ERROR_CODE, DATA: updateResult.DATA });
         return;
     }

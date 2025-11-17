@@ -78,16 +78,48 @@ class ZeroApiClient {
     }
 
     /**
-     * 梱包形態を更新
+     * 梱包形態(重量)を更新
+     *
+     * @param {*} itemId 商品ID
+     * @param {*} caseBarcode ケースバーコード
+     * @param {*} caseWeight ケース_重量（SKU単位）
+     */
+    async updatePackageWeight(itemId, caseBarcode, { caseWeight = "" }) {
+        const importResponse = await fetch(`${this.baseUrl}/common/import/import`, {
+            method: 'POST',
+            body: JSON.stringify({
+                OWNER_ID: process.env.ZERO_API_OWNER_ID,
+                AREA_ID: process.env.ZERO_API_AREA_ID,
+                ONLY_AREA_IMPORT_FLG: "1",
+                FILE_ID: "2115", // 商品マスタ(梱包形態)2
+                PTRN_ID: "0", // スマートマット検証用パターン
+                ERROR_DETAIL: "1",
+                IMPORT_DATA: [
+                    '"商品ID","ケースバーコード","ケース_重量（SKU単位）"',
+                    `"${itemId}","${caseBarcode}","${caseWeight}"`,
+                ]
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': this.sessionString
+            }
+        });
+        if (!importResponse.ok) {
+            throw new Error(`Update item package weight failed: ${importResponse.statusText}`);
+        }
+        return await importResponse.json();
+    }
+
+    /**
+     * 梱包形態(サイズ)を更新
      *
      * @param {*} itemId 商品ID
      * @param {*} caseBarcode ケースバーコード
      * @param {*} caseLength ケース_縦（SKU単位）
      * @param {*} width ケース_横（SKU単位）
      * @param {*} height ケース_高さ（SKU単位）
-     * @param {*} weight ケース_重量（SKU単位）
      */
-    async updatePackage(itemId, caseBarcode, { caseLength = "", caseWidth = "", caseHeight = "", caseWeight = "" }) {
+    async updatePackageSize(itemId, caseBarcode, { caseLength = "", caseWidth = "", caseHeight = "" }) {
         const importResponse = await fetch(`${this.baseUrl}/common/import/import`, {
             method: 'POST',
             body: JSON.stringify({
@@ -98,8 +130,8 @@ class ZeroApiClient {
                 PTRN_ID: "1", // スマートマット&スマートメジャー検証用パターン
                 ERROR_DETAIL: "1",
                 IMPORT_DATA: [
-                    '"商品ID","ケースバーコード","ケース_縦（SKU単位）","ケース_横（SKU単位）","ケース_高さ（SKU単位）","ケース_重量（SKU単位）"',
-                    `"${itemId}","${caseBarcode}","${caseLength}","${caseWidth}","${caseHeight}","${caseWeight}"`,
+                    '"商品ID","ケースバーコード","ケース_縦（SKU単位）","ケース_横（SKU単位）","ケース_高さ（SKU単位）"',
+                    `"${itemId}","${caseBarcode}","${caseLength}","${caseWidth}","${caseHeight}"`,
                 ]
             }),
             headers: {
