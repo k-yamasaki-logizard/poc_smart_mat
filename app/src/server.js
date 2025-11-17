@@ -74,7 +74,6 @@ apiRouter.get('/latestMeasureHistory', async (req, res) => {
 // 梱包形態(重量)を更新
 apiRouter.post('/itemPackageWeight', async (req, res) => {
     const { itemId, caseBarcode, caseWeight } = req.body;
-    res.json({ message: '梱包形態(重量)を更新しました' });
 
     // APIクライアント
     const zeroApiClient = new ZeroApiClient(process.env.ZERO_API_BASE_URL);
